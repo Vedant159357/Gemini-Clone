@@ -1,33 +1,8 @@
-// Try ports 5000 through 5004
-const findActivePort = async () => {
-  for (let port = 5000; port <= 5004; port++) {
-    try {
-      const response = await fetch(`http://localhost:${port}/api/test`);
-      if (response.ok) {
-        return port;
-      }
-    } catch (error) {
-      continue;
-    }
-  }
-  throw new Error("No active server found on ports 5000-5004");
-};
-
-let API_BASE_URL = null;
-
-const getApiUrl = async () => {
-  if (!API_BASE_URL) {
-    const port = await findActivePort();
-    API_BASE_URL = `http://localhost:${port}/api`;
-  }
-  return API_BASE_URL;
-};
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const sendMessage = async (prompt) => {
   try {
-    const apiUrl = await getApiUrl();
-
-    const response = await fetch(`${apiUrl}/chat`, {
+    const response = await fetch(`${API_BASE_URL}/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,8 +36,7 @@ export const sendMessage = async (prompt) => {
 
 export const testConnection = async () => {
   try {
-    const apiUrl = await getApiUrl();
-    const response = await fetch(`${apiUrl}/test`);
+    const response = await fetch(`${API_BASE_URL}/test`);
     const data = await response.json();
     return data;
   } catch (error) {
